@@ -2,6 +2,7 @@ import * as React from "react";
 import { Route, RouteComponentProps, Switch } from "react-router-dom";
 import { getItems } from "../../data";
 import styled from "../../styled";
+import ItemEdit from "../ItemEdit";
 import ItemView from "../ItemView";
 import ListView from "../ListView";
 
@@ -48,7 +49,12 @@ class App extends React.Component {
     if (!foundItem) {
       return <NoMatch />;
     }
-    return <ItemView item={foundItem} />;
+    return (
+      <>
+        <Route path={`${params.match.url}/view`} render={() => <ItemView item={foundItem} />} />
+        <Route path={`${params.match.url}/edit`} render={() => <ItemEdit item={foundItem} />} />
+      </>
+    );
   };
 }
 
