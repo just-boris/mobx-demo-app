@@ -14,7 +14,8 @@ declare module "styled-jss" {
 
   interface IStyled {
     <T extends keyof ReactHTML>(element: T): StyledFunction<ReactHTML[T]>;
-    <InProps, OutProps extends InProps = InProps>(component: React.ComponentClass<InProps>): StyledFunction<React.ComponentClass<OutProps>>;
+    <Props>(component: React.ComponentClass<Props>): StyledFunction<React.ComponentClass<Props>>;
+    <Props>(component: React.SFC<Props>): StyledFunction<React.SFC<Props>>;
   }
 
   export function Styled(baseStyles: Record<string, StyleWithNesting>): IStyled;

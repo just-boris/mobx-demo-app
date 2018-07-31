@@ -19,7 +19,7 @@ const ItemLink: React.SFC<{ id: string }> = ({ id, children }) => {
       path="/:itemId"
       children={({ match }) => {
         return (
-          <ItemLinkStyled to={`/${id}/view`} active={match.params.itemId === id}>
+          <ItemLinkStyled to={`/${id}/view`} active={match && match.params.itemId === id}>
             {children}
           </ItemLinkStyled>
         );
@@ -32,7 +32,8 @@ interface ItemLinkStyledProps extends LinkProps {
   active: boolean;
 }
 
-const ItemLinkStyled = styled<LinkProps, ItemLinkStyledProps>(Link)({
+const LinkClear: React.SFC<ItemLinkStyledProps> = ({ active, ...rest }) => <Link {...rest} />;
+const ItemLinkStyled = styled<ItemLinkStyledProps>(LinkClear)({
   "& + &": {
     borderTop: "1px solid #ddd"
   },
