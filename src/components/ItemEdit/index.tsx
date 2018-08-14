@@ -1,4 +1,6 @@
+import clone from "lodash/clone";
 import cloneDeep from "lodash/cloneDeep";
+import setWith from "lodash/setWith";
 import * as React from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-jss";
@@ -27,6 +29,7 @@ const ActionBar = styled("div")({
 
 interface ItemEditProps {
   item: Item;
+  onSubmit: (id: string, item: Item) => void;
 }
 interface ItemEditState {
   item?: Item;
@@ -35,7 +38,7 @@ interface ItemEditState {
 export default class ItemEdit extends React.Component<ItemEditProps, ItemEditState> {
   public static getDerivedStateFromProps(props: ItemEditProps, state: ItemEditState) {
     if (state.item && state.item.id === props.item.id) {
-      return;
+      return null;
     }
     return {
       item: cloneDeep(props.item)
@@ -53,20 +56,44 @@ export default class ItemEdit extends React.Component<ItemEditProps, ItemEditSta
       <Panel>
         <form onSubmit={this.onSubmit}>
           <h2>
-            <Input type="text" name="title" defaultValue={item.title} />
+            <Input type="text" name="title" value={item.title} onChange={this.handleTextChange} />
           </h2>
           <b>Stats</b>
           <p>
-            Passed: <input type="number" name="stats.passed" defaultValue={item.stats.passed.toString()} />
+            Passed:{" "}
+            <input
+              type="number"
+              name="stats.passed"
+              value={item.stats.passed.toString()}
+              onChange={this.handleNumberChange}
+            />
           </p>
           <p>
-            Failed: <input type="number" name="stats.passed" defaultValue={item.stats.failed.toString()} />
+            Failed:{" "}
+            <input
+              type="number"
+              name="stats.failed"
+              value={item.stats.failed.toString()}
+              onChange={this.handleNumberChange}
+            />
           </p>
           <p>
-            Broken: <input type="number" name="stats.passed" defaultValue={item.stats.broken.toString()} />
+            Broken:{" "}
+            <input
+              type="number"
+              name="stats.broken"
+              value={item.stats.broken.toString()}
+              onChange={this.handleNumberChange}
+            />
           </p>
           <p>
-            Skipped: <input type="number" name="stats.passed" defaultValue={item.stats.skipped.toString()} />
+            Skipped:{" "}
+            <input
+              type="number"
+              name="stats.skipped"
+              value={item.stats.skipped.toString()}
+              onChange={this.handleNumberChange}
+            />
           </p>
           <p>Total: {sum(item.stats)}</p>
           <ActionBar>
@@ -78,8 +105,33 @@ export default class ItemEdit extends React.Component<ItemEditProps, ItemEditSta
     );
   }
 
+  private updateItem(name: string, value: any) {
+    if (this.state.item) {
+      const newItem = setWith(clone(this.state.item), name, value, obj => clone(obj));
+      this.setState({
+        item: newItem
+      });
+    }
+  }
+
+  private handleTextChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+    this.updateItem(name, value);
+  };
+
+  private handleNumberChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+    const numValue: number = +value;
+    if (numValue >= 0) {
+      this.updateItem(name, numValue);
+    }
+  };
+
   private onSubmit = (event: React.FormEvent) => {
     event.preventDefault();
-    console.log(new FormData(event.target as HTMLFormElement));
+    const { item } = this.state;
+    if (item) {
+      this.props.onSubmit(item.id, item);
+    }
   };
 }

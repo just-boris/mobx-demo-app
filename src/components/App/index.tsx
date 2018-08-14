@@ -1,6 +1,7 @@
 import * as React from "react";
-import { Route, RouteComponentProps, Switch } from "react-router-dom";
+import { Route, RouteComponentProps, Switch, withRouter } from "react-router-dom";
 import { getItems } from "../../data";
+import { Item } from "../../interfaces";
 import styled from "../../styled";
 import ItemEdit from "../ItemEdit";
 import ItemView from "../ItemView";
@@ -25,7 +26,11 @@ function NoMatch() {
   return <NoMatchStyled>Select an item</NoMatchStyled>;
 }
 
-class App extends React.Component {
+interface IAppState {
+  items: Item[];
+}
+
+class App extends React.Component<RouteComponentProps<{itemId: string}>, IAppState> {
   public state = {
     items: getItems()
   };
@@ -52,10 +57,20 @@ class App extends React.Component {
     return (
       <>
         <Route path={`${params.match.url}/view`} render={() => <ItemView item={foundItem} />} />
-        <Route path={`${params.match.url}/edit`} render={() => <ItemEdit item={foundItem} />} />
+        <Route
+          path={`${params.match.url}/edit`}
+          render={() => <ItemEdit item={foundItem} onSubmit={this.onItemSave} />}
+        />
       </>
     );
   };
+
+  private onItemSave = (id: string, newItem: Item) => {
+    this.setState({
+      items: this.state.items.map(item => (item.id === id ? newItem : item))
+    });
+    this.props.history.push(`/${id}/view`)
+  };
 }
 
-export default App;
+export default withRouter(App);
