@@ -1,7 +1,7 @@
+import { observer } from "mobx-react";
 import * as React from "react";
 import { Route, RouteComponentProps, Switch, withRouter } from "react-router-dom";
-import { getItems } from "../../data";
-import { Item } from "../../interfaces";
+import { Item } from "../../model";
 import styled from "../../styled";
 import ItemEdit from "../ItemEdit";
 import ItemView from "../ItemView";
@@ -26,20 +26,17 @@ function NoMatch() {
   return <NoMatchStyled>Select an item</NoMatchStyled>;
 }
 
-interface IAppState {
+interface IAppProps extends RouteComponentProps<{ itemId: string }> {
   items: Item[];
 }
 
-class App extends React.Component<RouteComponentProps<{itemId: string}>, IAppState> {
-  public state = {
-    items: getItems()
-  };
-
+@observer
+class App extends React.Component<IAppProps> {
   public render() {
     return (
       <>
         <Layout>
-          <ListView items={this.state.items} />
+          <ListView items={this.props.items} />
           <Switch>
             <Route path="/:itemId" render={this.renderItem} />
             <Route component={NoMatch} />
@@ -50,7 +47,7 @@ class App extends React.Component<RouteComponentProps<{itemId: string}>, IAppSta
   }
 
   private renderItem = (params: RouteComponentProps<{ itemId: string }>) => {
-    const foundItem = this.state.items.find(item => item.id === params.match.params.itemId);
+    const foundItem = this.props.items.find(item => item.id === params.match.params.itemId);
     if (!foundItem) {
       return <NoMatch />;
     }
@@ -66,10 +63,9 @@ class App extends React.Component<RouteComponentProps<{itemId: string}>, IAppSta
   };
 
   private onItemSave = (id: string, newItem: Item) => {
-    this.setState({
-      items: this.state.items.map(item => (item.id === id ? newItem : item))
-    });
-    this.props.history.push(`/${id}/view`)
+    const itemIndex = this.props.items.findIndex(item => item.id === id);
+    this.props.items[itemIndex] = newItem;
+    this.props.history.push(`/${id}/view`);
   };
 }
 

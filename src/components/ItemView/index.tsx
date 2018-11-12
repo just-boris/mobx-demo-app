@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Link } from "react-router-dom";
-import { Item } from "../../interfaces";
+import { Item } from "../../model";
 import styled from "../../styled";
 import Panel from "../Panel";
 

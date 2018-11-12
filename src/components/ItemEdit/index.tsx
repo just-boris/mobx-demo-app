@@ -1,10 +1,10 @@
-import clone from "lodash/clone";
-import cloneDeep from "lodash/cloneDeep";
 import setWith from "lodash/setWith";
+import { observable } from "mobx";
+import { observer } from "mobx-react";
 import * as React from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-jss";
-import { Item } from "../../interfaces";
+import { Item } from "../../model";
 import Panel from "../Panel";
 
 function sum(stats: object) {
@@ -31,27 +31,17 @@ interface ItemEditProps {
   item: Item;
   onSubmit: (id: string, item: Item) => void;
 }
-interface ItemEditState {
-  item?: Item;
-}
 
-export default class ItemEdit extends React.Component<ItemEditProps, ItemEditState> {
-  public static getDerivedStateFromProps(props: ItemEditProps, state: ItemEditState) {
-    if (state.item && state.item.id === props.item.id) {
-      return null;
-    }
-    return {
-      item: cloneDeep(props.item)
-    };
-  }
-
-  public state: ItemEditState = {};
+@observer
+export default class ItemEdit extends React.Component<ItemEditProps> {
+  @observable
+  private editItem: Item | null = null;
 
   public render() {
-    const { item } = this.state;
-    if (!item) {
-      return;
+    if (!this.editItem) {
+      return null;
     }
+    const item = this.editItem;
     return (
       <Panel>
         <form onSubmit={this.onSubmit}>
@@ -105,12 +95,15 @@ export default class ItemEdit extends React.Component<ItemEditProps, ItemEditSta
     );
   }
 
+  public componentDidMount() {
+    if (!this.editItem || this.editItem.id !== this.props.item.id) {
+      this.editItem = Item.fromItem(this.props.item);
+    }
+  }
+
   private updateItem(name: string, value: any) {
-    if (this.state.item) {
-      const newItem = setWith(clone(this.state.item), name, value, obj => clone(obj));
-      this.setState({
-        item: newItem
-      });
+    if (this.editItem) {
+      setWith(this.editItem, name, value);
     }
   }
 
@@ -129,9 +122,8 @@ export default class ItemEdit extends React.Component<ItemEditProps, ItemEditSta
 
   private onSubmit = (event: React.FormEvent) => {
     event.preventDefault();
-    const { item } = this.state;
-    if (item) {
-      this.props.onSubmit(item.id, item);
+    if (this.editItem) {
+      this.props.onSubmit(this.editItem.id, this.editItem);
     }
   };
 }

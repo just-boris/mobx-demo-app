@@ -3,16 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@types/faker": "^4.1.2",
-    "@types/jss": "^9.5.4",
-    "@types/react-router-dom": "^4.3.0",
     "faker": "^4.1.0",
-    "flow-to-typescript": "^1.0.0",
     "lodash": "^4.17.10",
+    "mobx": "^5.0.3",
+    "mobx-react": "^5.2.5",
     "react": "^16.4.1",
     "react-dom": "^16.4.1",
     "react-router-dom": "^4.3.1",
-    "react-scripts-ts": "2.16.0",
     "styled-jss": "^2.2.3"
   },
   "scripts": {
@@ -22,11 +19,15 @@
     "eject": "react-scripts-ts eject"
   },
   "devDependencies": {
+    "@types/faker": "^4.1.2",
     "@types/jest": "^23.3.1",
+    "@types/jss": "^9.5.4",
     "@types/lodash": "^4.14.115",
     "@types/node": "^10.5.4",
     "@types/react": "^16.4.7",
     "@types/react-dom": "^16.0.6",
+    "@types/react-router-dom": "^4.3.0",
+    "react-scripts-ts": "2.17.0",
     "typescript": "^2.9.2"
   },
   "prettier": {
